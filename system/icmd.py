@@ -28,28 +28,42 @@ class command_interpreter():
         self.listener.close()
     
     def send_responce(self,responce):
+        if responce==None:
+            self.conn.send("")
+
         self.conn.send(responce)
         
     
     def interpret_command(self,command:str)->str:
         command = command.split(" ")
-        if command[0] == "computer":
-            count = 1
-            for i in range(100000000):
-                count = count+1
-            return str(count)
-        elif command[0] == "exit":
-            return "Closing connection"
-        else:
-            return "Command not found"
+
+        if command[0] == "help":
+            if len(command) == 1:
+                print("Help command")
+            else:
+                for cmd, module in self.modules:
+                    if command[1] == cmd:
+                        return module.help()
+
+        for cmd, module in self.modules:
+            if command[0] == cmd:
+                if len(command) == 1:
+                    return module.run()
+                else:
+                    return module.run(args=command[1:])
+
+        return "Command not found"
 
     def load_modules(self, module_path):
         files = glob.glob(module_path+"*.py")
 
+        self.modules = []
         for file in files:
             code = None
+            ldict = {}
             with open(file) as f:
                 code = f.read()
                 f.close()
-            exec(code)
-
+            exec(code, ldict)
+            self.modules.append((ldict["module"].get_command(),ldict["module"]))
+        print(self.modules)

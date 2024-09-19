@@ -3,16 +3,13 @@ import glob
 class mod():
 
     def __init__(self) -> None:
-        self.command = "ls"
+        self.command = "mintpy"
         self.name = "Testing"
-        self.has_args = False
+        self.has_args = True
 
-    def run(self, args=None)->str:
-        responce = ""
-
-        responce = glob.glob(args[0])
-
-        return responce
+    def run(self, args=None):
+        print(args)
+        return None
 
     def getname(self):
         return self.name
@@ -23,4 +20,11 @@ class mod():
     def get_command(self):
         return self.command
 
+    def help(self)->str:
+        msg = """
+        args:
+            -r reminder
+            -t time
+        """
+        return msg
 module = mod()
